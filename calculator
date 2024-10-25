@@ -42,7 +42,6 @@
         }
 
         .main-content {
-            min-height: auto;
             padding: 20px;
             background: white;
             border-radius: 8px;
@@ -57,24 +56,16 @@
             box-shadow: 0 2px 6px rgba(0,0,0,0.1);
             height: fit-content;
             border: 1px solid #ddd;
-        }
-
-        .exchange-rate-section {
-            background: #f8f9fa;
-            padding: 20px;
             margin-bottom: 20px;
-            border-radius: 8px;
-            border: 1px solid #dee2e6;
         }
 
-        .exchange-rate-input {
-            max-width: 200px; /* Reduced width */
-        }
-
-        .costs-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
+        .summary-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #4CAF50;
+            color: #2c3e50;
         }
 
         .input-group {
@@ -103,22 +94,12 @@
             box-shadow: 0 0 5px rgba(74, 175, 80, 0.2);
         }
 
-        .rate-label {
-            color: #666;
-            font-size: 0.9em;
-            margin-top: 8px;
-        }
-
         .calc-row {
             display: flex;
             justify-content: space-between;
             margin: 10px 0;
             padding: 8px 0;
             border-bottom: 1px solid #eee;
-        }
-
-        .calc-row span {
-            color: #2c3e50;
         }
 
         .total-row {
@@ -130,49 +111,56 @@
             font-size: 1.1em;
         }
 
-        .summary-title {
-            font-size: 1.2em;
-            font-weight: 600;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #4CAF50;
-            color: #2c3e50;
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .delete-btn {
+            color: red;
+            background: none;
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .saved-calculations {
+            margin-top: 20px;
+        }
+
+        .saved-calculations-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .saved-calculations-list li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 5px 0;
         }
 
         @media (max-width: 1024px) {
             .calculator-section {
                 grid-template-columns: 1fr;
             }
-
             .floating-summary {
                 position: static;
                 margin-top: 20px;
             }
-
-            .costs-grid {
-                grid-template-columns: 1fr;
-                gap: 15px;
-            }
         }
 
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-
-            .calculator-section {
-                padding: 15px;
-                margin-bottom: 20px;
-            }
-
-            .exchange-rate-section {
-                padding: 15px;
-            }
-
-            .section-title {
-                font-size: 1.3em;
-            }
-        }
     </style>
 </head>
 <body>
@@ -180,17 +168,10 @@
     <div class="calculator-section">
         <h2 class="section-title">Exchange Rate Settings</h2>
         <div class="main-content">
-            <div class="exchange-rate-section">
-                <div class="input-group exchange-rate-input">
-                    <label>USD to GBP Exchange Rate</label>
-                    <input type="number" 
-                           id="exchangeRate" 
-                           value="0.79" 
-                           step="0.0001" 
-                           min="0"
-                           oninput="updateAllCalculations()">
-                    <p class="rate-label">Enter current exchange rate (e.g., 0.79 means 1 USD = £0.79)</p>
-                </div>
+            <div class="input-group">
+                <label>USD to GBP Exchange Rate</label>
+                <input type="number" id="exchangeRate" value="0.79" step="0.0001" min="0" oninput="updateAllCalculations()">
+                <p class="rate-label">Enter current exchange rate (e.g., 0.79 means 1 USD = £0.79)</p>
             </div>
         </div>
     </div>
@@ -200,62 +181,26 @@
         <h2 class="section-title">Shipping & Import Costs</h2>
         
         <div class="main-content">
-            <div class="costs-grid">
-                <div>
-                    <div class="input-group">
-                        <label>Ocean/Air Freight (USD)</label>
-                        <input type="number" id="freight" oninput="updateAllCalculations()" step="0.01">
-                    </div>
-                    <div class="input-group">
-                        <label>Port Handling (USD)</label>
-                        <input type="number" id="portHandling" oninput="updateAllCalculations()" step="0.01">
-                    </div>
-                    <div class="input-group">
-                        <label>Container Fees (USD)</label>
-                        <input type="number" id="containerFees" oninput="updateAllCalculations()" step="0.01">
-                    </div>
-                </div>
-                <div>
-                    <div class="input-group">
-                        <label>Insurance (USD)</label>
-                        <input type="number" id="insurance" oninput="updateAllCalculations()" step="0.01">
-                    </div>
-                    <div class="input-group">
-                        <label>Customs Broker Fees (USD)</label>
-                        <input type="number" id="brokerFees" oninput="updateAllCalculations()" step="0.01">
-                    </div>
-                    <div class="input-group">
-                        <label>Documentation Fees (USD)</label>
-                        <input type="number" id="docFees" oninput="updateAllCalculations()" step="0.01">
-                    </div>
-                </div>
+            <div class="input-group">
+                <label>Ocean/Air Freight (USD)</label>
+                <input type="number" id="freight" oninput="updateAllCalculations()" step="0.01">
             </div>
-        </div>
-    </div>
-
-    <!-- Import Duties & Taxes Section -->
-    <div class="calculator-section">
-        <h2 class="section-title">Import Duties & Taxes</h2>
-        
-        <div class="main-content">
-            <div class="costs-grid">
-                <div>
-                    <div class="input-group">
-                        <label>Customs Duty Rates (USD)</label>
-                        <input type="number" id="customsDuty" oninput="updateAllCalculations()" step="0.01">
-                    </div>
-                </div>
-                <div>
-                    <div class="input-group">
-                        <label>Import VAT (USD)</label>
-                        <input type="number" id="importVAT" oninput="updateAllCalculations()" step="0.01">
-                    </div>
-                </div>
+            <div class="input-group">
+                <label>Port Handling (USD)</label>
+                <input type="number" id="portHandling" oninput="updateAllCalculations()" step="0.01">
+            </div>
+            <div class="input-group">
+                <label>Container Fees (USD)</label>
+                <input type="number" id="containerFees" oninput="updateAllCalculations()" step="0.01">
+            </div>
+            <div class="input-group">
+                <label>Insurance (USD)</label>
+                <input type="number" id="insurance" oninput="updateAllCalculations()" step="0.01">
             </div>
         </div>
 
         <div class="floating-summary">
-            <div class="summary-title">Total Import Costs</div>
+            <div class="summary-title">Shipping & Import Costs Summary</div>
             <div class="calc-row">
                 <span>Freight:</span>
                 <span id="summary-freight">$0.00</span>
@@ -272,6 +217,244 @@
                 <span>Insurance:</span>
                 <span id="summary-insurance">$0.00</span>
             </div>
+            <div class="calc-row total-row">
+                <span>Total Shipping Costs (USD):</span>
+                <span id="summary-shipping-total-overall">$0.00</span>
+            </div>
+            <div class="calc-row total-row">
+                <span>Total Shipping Costs (GBP):</span>
+                <span id="summary-shipping-total-gbp">£0.00</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Duties & Taxes Section -->
+    <div class="calculator-section">
+        <h2 class="section-title">Import Duties & Taxes</h2>
+        
+        <div class="main-content">
+            <div class="input-group">
+                <label>Customs Duty Rates (USD)</label>
+                <input type="number" id="customsDuty" oninput="updateAllCalculations()" step="0.01">
+            </div>
+            <div class="input-group">
+                <label>Import VAT (USD)</label>
+                <input type="number" id="importVAT" oninput="updateAllCalculations()" step="0.01">
+            </div>
+            <div class="input-group">
+                <label>Broker Fees (USD)</label>
+                <input type="number" id="importBrokerFees" oninput="updateAllCalculations()" step="0.01">
+            </div>
+        </div>
+
+        <div class="floating-summary">
+            <div class="summary-title">Import Duties & Taxes Summary</div>
+            <div class="calc-row">
+                <span>Customs Duty:</span>
+                <span id="summary-customsDuty">$0.00</span>
+            </div>
+            <div class="calc-row">
+                <span>Import VAT:</span>
+                <span id="summary-importVAT">$0.00</span>
+            </div>
             <div class="calc-row">
                 <span>Broker Fees:</span>
-                <span
+                <span id="summary-importBrokerFees">$0.00</span>
+            </div>
+            <div class="calc-row total-row">
+                <span>Total Duties & Taxes (USD):</span>
+                <span id="summary-duties-taxes-total-overall">$0.00</span>
+            </div>
+            <div class="calc-row total-row">
+                <span>Total Duties & Taxes (GBP):</span>
+                <span id="summary-duties-taxes-total-gbp">£0.00</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Section -->
+    <div class="calculator-section">
+        <h2 class="section-title">Summary</h2>
+        
+        <div class="main-content">
+            <div class="input-group">
+                <label for="calculationName">Calculation Name</label>
+                <input type="text" id="calculationName" placeholder="Enter a name for this calculation">
+            </div>
+            
+            <div class="calc-row">
+                <span>Freight (USD):</span>
+                <span id="summary-freight">$0.00</span>
+            </div>
+            <div class="calc-row">
+                <span>Port Handling (USD):</span>
+                <span id="summary-port">$0.00</span>
+            </div>
+            <div class="calc-row">
+                <span>Container Fees (USD):</span>
+                <span id="summary-container">$0.00</span>
+            </div>
+            <div class="calc-row">
+                <span>Insurance (USD):</span>
+                <span id="summary-insurance">$0.00</span>
+            </div>
+            <div class="calc-row">
+                <span>Customs Duty (USD):</span>
+                <span id="summary-customsDuty">$0.00</span>
+            </div>
+            <div class="calc-row">
+                <span>Import VAT (USD):</span>
+                <span id="summary-importVAT">$0.00</span>
+            </div>
+            <div class="calc-row">
+                <span>Broker Fees (USD):</span>
+                <span id="summary-importBrokerFees">$0.00</span>
+            </div>
+            <div class="calc-row total-row">
+                <span>Grand Total (USD):</span>
+                <span id="grand-total-usd">$0.00</span>
+            </div>
+            <div class="calc-row total-row">
+                <span>Grand Total (GBP):</span>
+                <span id="grand-total-gbp">£0.00</span>
+            </div>
+            
+            <button onclick="saveCalculation()">Save Calculation</button>
+
+            <div class="saved-calculations">
+                <h3>Saved Calculations</h3>
+                <ul id="savedCalculationsList" class="saved-calculations-list"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function getInputValue(id) {
+            return parseFloat(document.getElementById(id)?.value) || 0;
+        }
+
+        function updateAllCalculations() {
+            const exchangeRate = getInputValue('exchangeRate') || 0.79;
+
+            // Calculate Shipping Costs
+            const freight = getInputValue('freight');
+            const portHandling = getInputValue('portHandling');
+            const containerFees = getInputValue('containerFees');
+            const insurance = getInputValue('insurance');
+            const totalShippingUSD = freight + portHandling + containerFees + insurance;
+
+            // Update Shipping Summary
+            document.getElementById('summary-freight').textContent = `$${freight.toFixed(2)}`;
+            document.getElementById('summary-port').textContent = `$${portHandling.toFixed(2)}`;
+            document.getElementById('summary-container').textContent = `$${containerFees.toFixed(2)}`;
+            document.getElementById('summary-insurance').textContent = `$${insurance.toFixed(2)}`;
+            document.getElementById('summary-shipping-total-overall').textContent = `$${totalShippingUSD.toFixed(2)}`;
+            document.getElementById('summary-shipping-total-gbp').textContent = `£${(totalShippingUSD * exchangeRate).toFixed(2)}`;
+
+            // Calculate Duties & Taxes
+            const customsDuty = getInputValue('customsDuty');
+            const importVAT = getInputValue('importVAT');
+            const importBrokerFees = getInputValue('importBrokerFees');
+            const totalDutiesTaxesUSD = customsDuty + importVAT + importBrokerFees;
+
+            // Update Duties & Taxes Summary
+            document.getElementById('summary-customsDuty').textContent = `$${customsDuty.toFixed(2)}`;
+            document.getElementById('summary-importVAT').textContent = `$${importVAT.toFixed(2)}`;
+            document.getElementById('summary-importBrokerFees').textContent = `$${importBrokerFees.toFixed(2)}`;
+            document.getElementById('summary-duties-taxes-total-overall').textContent = `$${totalDutiesTaxesUSD.toFixed(2)}`;
+            document.getElementById('summary-duties-taxes-total-gbp').textContent = `£${(totalDutiesTaxesUSD * exchangeRate).toFixed(2)}`;
+
+            // Calculate Grand Total
+            const grandTotalUSD = totalShippingUSD + totalDutiesTaxesUSD;
+            document.getElementById('grand-total-usd').textContent = `$${grandTotalUSD.toFixed(2)}`;
+            document.getElementById('grand-total-gbp').textContent = `£${(grandTotalUSD * exchangeRate).toFixed(2)}`;
+        }
+
+        function saveCalculation() {
+            const calculationName = document.getElementById('calculationName').value.trim();
+            if (!calculationName) {
+                alert("Please enter a name for this calculation.");
+                return;
+            }
+
+            const exchangeRate = getInputValue('exchangeRate');
+            const shippingCosts = getInputValue('freight') + getInputValue('portHandling') + getInputValue('containerFees') + getInputValue('insurance');
+            const dutiesTaxes = getInputValue('customsDuty') + getInputValue('importVAT') + getInputValue('importBrokerFees');
+            const grandTotalUSD = shippingCosts + dutiesTaxes;
+            const grandTotalGBP = grandTotalUSD * exchangeRate;
+
+            const savedCalculation = {
+                name: calculationName,
+                exchangeRate,
+                freight: getInputValue('freight'),
+                portHandling: getInputValue('portHandling'),
+                containerFees: getInputValue('containerFees'),
+                insurance: getInputValue('insurance'),
+                customsDuty: getInputValue('customsDuty'),
+                importVAT: getInputValue('importVAT'),
+                importBrokerFees: getInputValue('importBrokerFees'),
+                grandTotalUSD: grandTotalUSD.toFixed(2),
+                grandTotalGBP: grandTotalGBP.toFixed(2)
+            };
+
+            const savedCalculations = JSON.parse(localStorage.getItem('savedCalculations') || '[]');
+            savedCalculations.push(savedCalculation);
+            localStorage.setItem('savedCalculations', JSON.stringify(savedCalculations));
+
+            loadSavedCalculations();
+            alert("Calculation saved!");
+        }
+
+        function loadSavedCalculations() {
+            const savedCalculations = JSON.parse(localStorage.getItem('savedCalculations') || '[]');
+            const savedCalculationsList = document.getElementById('savedCalculationsList');
+            savedCalculationsList.innerHTML = '';
+
+            savedCalculations.forEach((calc, index) => {
+                const li = document.createElement('li');
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = "Delete";
+                deleteButton.className = 'delete-btn';
+                deleteButton.onclick = (e) => {
+                    e.stopPropagation();
+                    deleteCalculation(index);
+                };
+
+                li.textContent = `${calc.name} (Total: $${calc.grandTotalUSD} / £${calc.grandTotalGBP})`;
+                li.onclick = () => loadCalculation(index);
+                li.appendChild(deleteButton);
+                savedCalculationsList.appendChild(li);
+            });
+        }
+
+        function loadCalculation(index) {
+            const savedCalculations = JSON.parse(localStorage.getItem('savedCalculations') || '[]');
+            const calc = savedCalculations[index];
+
+            document.getElementById('exchangeRate').value = calc.exchangeRate;
+            document.getElementById('freight').value = calc.freight;
+            document.getElementById('portHandling').value = calc.portHandling;
+            document.getElementById('containerFees').value = calc.containerFees;
+            document.getElementById('insurance').value = calc.insurance;
+            document.getElementById('customsDuty').value = calc.customsDuty;
+            document.getElementById('importVAT').value = calc.importVAT;
+            document.getElementById('importBrokerFees').value = calc.importBrokerFees;
+            document.getElementById('calculationName').value = calc.name;
+
+            updateAllCalculations();
+            alert(`Loaded calculation: ${calc.name}`);
+        }
+
+        function deleteCalculation(index) {
+            const savedCalculations = JSON.parse(localStorage.getItem('savedCalculations') || '[]');
+            savedCalculations.splice(index, 1);
+            localStorage.setItem('savedCalculations', JSON.stringify(savedCalculations));
+            loadSavedCalculations();
+            alert("Calculation deleted.");
+        }
+
+        // Load saved calculations on page load
+        document.addEventListener('DOMContentLoaded', loadSavedCalculations);
+    </script>
+</body>
+</html>
