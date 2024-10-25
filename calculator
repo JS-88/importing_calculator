@@ -126,15 +126,6 @@
             background-color: #45a049;
         }
 
-        .delete-btn {
-            color: red;
-            background: none;
-            border: none;
-            font-size: 14px;
-            cursor: pointer;
-            margin-left: 10px;
-        }
-
         .saved-calculations {
             margin-top: 20px;
         }
@@ -146,9 +137,17 @@
 
         .saved-calculations-list li {
             display: flex;
-            align-items: center;
             justify-content: space-between;
             margin: 5px 0;
+            cursor: pointer;
+        }
+
+        .delete-btn {
+            color: red;
+            background: none;
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
         }
 
         @media (max-width: 1024px) {
@@ -198,34 +197,6 @@
                 <input type="number" id="insurance" oninput="updateAllCalculations()" step="0.01">
             </div>
         </div>
-
-        <div class="floating-summary">
-            <div class="summary-title">Shipping & Import Costs Summary</div>
-            <div class="calc-row">
-                <span>Freight:</span>
-                <span id="summary-freight">$0.00</span>
-            </div>
-            <div class="calc-row">
-                <span>Port Handling:</span>
-                <span id="summary-port">$0.00</span>
-            </div>
-            <div class="calc-row">
-                <span>Container Fees:</span>
-                <span id="summary-container">$0.00</span>
-            </div>
-            <div class="calc-row">
-                <span>Insurance:</span>
-                <span id="summary-insurance">$0.00</span>
-            </div>
-            <div class="calc-row total-row">
-                <span>Total Shipping Costs (USD):</span>
-                <span id="summary-shipping-total-overall">$0.00</span>
-            </div>
-            <div class="calc-row total-row">
-                <span>Total Shipping Costs (GBP):</span>
-                <span id="summary-shipping-total-gbp">£0.00</span>
-            </div>
-        </div>
     </div>
 
     <!-- Import Duties & Taxes Section -->
@@ -246,53 +217,24 @@
                 <input type="number" id="importBrokerFees" oninput="updateAllCalculations()" step="0.01">
             </div>
         </div>
-
-        <div class="floating-summary">
-            <div class="summary-title">Import Duties & Taxes Summary</div>
-            <div class="calc-row">
-                <span>Customs Duty:</span>
-                <span id="summary-customsDuty">$0.00</span>
-            </div>
-            <div class="calc-row">
-                <span>Import VAT:</span>
-                <span id="summary-importVAT">$0.00</span>
-            </div>
-            <div class="calc-row">
-                <span>Broker Fees:</span>
-                <span id="summary-importBrokerFees">$0.00</span>
-            </div>
-            <div class="calc-row total-row">
-                <span>Total Duties & Taxes (USD):</span>
-                <span id="summary-duties-taxes-total-overall">$0.00</span>
-            </div>
-            <div class="calc-row total-row">
-                <span>Total Duties & Taxes (GBP):</span>
-                <span id="summary-duties-taxes-total-gbp">£0.00</span>
-            </div>
-        </div>
     </div>
 
-    <!-- Summary Section -->
+    <!-- Summary Section with Save Calculation -->
     <div class="calculator-section">
-        <h2 class="section-title">Summary</h2>
+        <h2 class="section-title">Summary of Import Costs</h2>
         
         <div class="main-content">
-            <div class="input-group">
-                <label for="calculationName">Calculation Name</label>
-                <input type="text" id="calculationName" placeholder="Enter a name for this calculation">
-            </div>
-            
             <div class="calc-row">
                 <span>Freight (USD):</span>
                 <span id="summary-freight">$0.00</span>
             </div>
             <div class="calc-row">
                 <span>Port Handling (USD):</span>
-                <span id="summary-port">$0.00</span>
+                <span id="summary-portHandling">$0.00</span>
             </div>
             <div class="calc-row">
                 <span>Container Fees (USD):</span>
-                <span id="summary-container">$0.00</span>
+                <span id="summary-containerFees">$0.00</span>
             </div>
             <div class="calc-row">
                 <span>Insurance (USD):</span>
@@ -311,14 +253,19 @@
                 <span id="summary-importBrokerFees">$0.00</span>
             </div>
             <div class="calc-row total-row">
-                <span>Grand Total (USD):</span>
-                <span id="grand-total-usd">$0.00</span>
+                <span>Total Import Costs (USD):</span>
+                <span id="summary-total-cost-usd">$0.00</span>
             </div>
             <div class="calc-row total-row">
-                <span>Grand Total (GBP):</span>
-                <span id="grand-total-gbp">£0.00</span>
+                <span>Total Import Costs (GBP):</span>
+                <span id="summary-total-cost-gbp">£0.00</span>
             </div>
-            
+
+            <!-- Save Calculation Feature -->
+            <div class="input-group">
+                <label for="calculationName">Calculation Name</label>
+                <input type="text" id="calculationName" placeholder="Enter a name for this calculation">
+            </div>
             <button onclick="saveCalculation()">Save Calculation</button>
 
             <div class="saved-calculations">
@@ -336,38 +283,28 @@
         function updateAllCalculations() {
             const exchangeRate = getInputValue('exchangeRate') || 0.79;
 
-            // Calculate Shipping Costs
+            // Get individual values
             const freight = getInputValue('freight');
             const portHandling = getInputValue('portHandling');
             const containerFees = getInputValue('containerFees');
             const insurance = getInputValue('insurance');
-            const totalShippingUSD = freight + portHandling + containerFees + insurance;
-
-            // Update Shipping Summary
-            document.getElementById('summary-freight').textContent = `$${freight.toFixed(2)}`;
-            document.getElementById('summary-port').textContent = `$${portHandling.toFixed(2)}`;
-            document.getElementById('summary-container').textContent = `$${containerFees.toFixed(2)}`;
-            document.getElementById('summary-insurance').textContent = `$${insurance.toFixed(2)}`;
-            document.getElementById('summary-shipping-total-overall').textContent = `$${totalShippingUSD.toFixed(2)}`;
-            document.getElementById('summary-shipping-total-gbp').textContent = `£${(totalShippingUSD * exchangeRate).toFixed(2)}`;
-
-            // Calculate Duties & Taxes
             const customsDuty = getInputValue('customsDuty');
             const importVAT = getInputValue('importVAT');
             const importBrokerFees = getInputValue('importBrokerFees');
-            const totalDutiesTaxesUSD = customsDuty + importVAT + importBrokerFees;
 
-            // Update Duties & Taxes Summary
+            // Calculate total costs in USD
+            const totalImportCostsUSD = freight + portHandling + containerFees + insurance + customsDuty + importVAT + importBrokerFees;
+
+            // Update summary section with individual costs and totals
+            document.getElementById('summary-freight').textContent = `$${freight.toFixed(2)}`;
+            document.getElementById('summary-portHandling').textContent = `$${portHandling.toFixed(2)}`;
+            document.getElementById('summary-containerFees').textContent = `$${containerFees.toFixed(2)}`;
+            document.getElementById('summary-insurance').textContent = `$${insurance.toFixed(2)}`;
             document.getElementById('summary-customsDuty').textContent = `$${customsDuty.toFixed(2)}`;
             document.getElementById('summary-importVAT').textContent = `$${importVAT.toFixed(2)}`;
             document.getElementById('summary-importBrokerFees').textContent = `$${importBrokerFees.toFixed(2)}`;
-            document.getElementById('summary-duties-taxes-total-overall').textContent = `$${totalDutiesTaxesUSD.toFixed(2)}`;
-            document.getElementById('summary-duties-taxes-total-gbp').textContent = `£${(totalDutiesTaxesUSD * exchangeRate).toFixed(2)}`;
-
-            // Calculate Grand Total
-            const grandTotalUSD = totalShippingUSD + totalDutiesTaxesUSD;
-            document.getElementById('grand-total-usd').textContent = `$${grandTotalUSD.toFixed(2)}`;
-            document.getElementById('grand-total-gbp').textContent = `£${(grandTotalUSD * exchangeRate).toFixed(2)}`;
+            document.getElementById('summary-total-cost-usd').textContent = `$${totalImportCostsUSD.toFixed(2)}`;
+            document.getElementById('summary-total-cost-gbp').textContent = `£${(totalImportCostsUSD * exchangeRate).toFixed(2)}`;
         }
 
         function saveCalculation() {
@@ -377,24 +314,16 @@
                 return;
             }
 
-            const exchangeRate = getInputValue('exchangeRate');
-            const shippingCosts = getInputValue('freight') + getInputValue('portHandling') + getInputValue('containerFees') + getInputValue('insurance');
-            const dutiesTaxes = getInputValue('customsDuty') + getInputValue('importVAT') + getInputValue('importBrokerFees');
-            const grandTotalUSD = shippingCosts + dutiesTaxes;
-            const grandTotalGBP = grandTotalUSD * exchangeRate;
-
             const savedCalculation = {
                 name: calculationName,
-                exchangeRate,
+                exchangeRate: getInputValue('exchangeRate'),
                 freight: getInputValue('freight'),
                 portHandling: getInputValue('portHandling'),
                 containerFees: getInputValue('containerFees'),
                 insurance: getInputValue('insurance'),
                 customsDuty: getInputValue('customsDuty'),
                 importVAT: getInputValue('importVAT'),
-                importBrokerFees: getInputValue('importBrokerFees'),
-                grandTotalUSD: grandTotalUSD.toFixed(2),
-                grandTotalGBP: grandTotalGBP.toFixed(2)
+                importBrokerFees: getInputValue('importBrokerFees')
             };
 
             const savedCalculations = JSON.parse(localStorage.getItem('savedCalculations') || '[]');
@@ -412,16 +341,17 @@
 
             savedCalculations.forEach((calc, index) => {
                 const li = document.createElement('li');
+                li.textContent = calc.name;
+                li.onclick = () => loadCalculation(index);
+
                 const deleteButton = document.createElement('button');
-                deleteButton.textContent = "Delete";
+                deleteButton.textContent = 'Delete';
                 deleteButton.className = 'delete-btn';
                 deleteButton.onclick = (e) => {
                     e.stopPropagation();
                     deleteCalculation(index);
                 };
 
-                li.textContent = `${calc.name} (Total: $${calc.grandTotalUSD} / £${calc.grandTotalGBP})`;
-                li.onclick = () => loadCalculation(index);
                 li.appendChild(deleteButton);
                 savedCalculationsList.appendChild(li);
             });
