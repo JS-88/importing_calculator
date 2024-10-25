@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Import Cost Calculator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body { 
+            padding: 20px; 
+            font-family: Arial, sans-serif; 
+            margin: 0;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .calculator-section {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto 40px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            grid-column: 1 / -1;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            color: #2c3e50;
+        }
+
+        .main-content {
+            min-height: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .floating-summary {
+            position: sticky;
+            top: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            height: fit-content;
+            border: 1px solid #ddd;
+        }
+
+        .exchange-rate-section {
+            background: #f8f9fa;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+
+        .exchange-rate-input {
+            max-width: 200px; /* Reduced width */
+        }
+
+        .costs-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .input-group {
+            margin: 15px 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 5px rgba(74, 175, 80, 0.2);
+        }
+
+        .rate-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 8px;
+        }
+
+        .calc-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .calc-row span {
+            color: #2c3e50;
+        }
+
+        .total-row {
+            font-weight: 600;
+            border-top: 2px solid #ddd;
+            margin-top: 15px;
+            padding-top: 15px;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+
+        .summary-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #4CAF50;
+            color: #2c3e50;
+        }
+
+        @media (max-width: 1024px) {
+            .calculator-section {
+                grid-template-columns: 1fr;
+            }
+
+            .floating-summary {
+                position: static;
+                margin-top: 20px;
+            }
+
+            .costs-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .calculator-section {
+                padding: 15px;
+                margin-bottom: 20px;
+            }
+
+            .exchange-rate-section {
+                padding: 15px;
+            }
+
+            .section-title {
+                font-size: 1.3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Exchange Rate Section -->
+    <div class="calculator-section">
+        <h2 class="section-title">Exchange Rate Settings</h2>
+        <div class="main-content">
+            <div class="exchange-rate-section">
+                <div class="input-group exchange-rate-input">
+                    <label>USD to GBP Exchange Rate</label>
+                    <input type="number" 
+                           id="exchangeRate" 
+                           value="0.79" 
+                           step="0.0001" 
+                           min="0"
+                           oninput="updateAllCalculations()">
+                    <p class="rate-label">Enter current exchange rate (e.g., 0.79 means 1 USD = £0.79)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shipping Costs Section -->
+    <div class="calculator-section">
+        <h2 class="section-title">Shipping & Import Costs</h2>
+        
+        <div class="main-content">
+            <div class="costs-grid">
+                <div>
+                    <div class="input-group">
+                        <label>Ocean/Air Freight (USD)</label>
+                        <input type="number" id="freight" oninput="updateAllCalculations()" step="0.01">
+                    </div>
+                    <div class="input-group">
+                        <label>Port Handling (USD)</label>
+                        <input type="number" id="portHandling" oninput="updateAllCalculations()" step="0.01">
+                    </div>
+                    <div class="input-group">
+                        <label>Container Fees (USD)</label>
+                        <input type="number" id="containerFees" oninput="updateAllCalculations()" step="0.01">
+                    </div>
+                </div>
+                <div>
+                    <div class="input-group">
+                        <label>Insurance (USD)</label>
+                        <input type="number" id="insurance" oninput="updateAllCalculations()" step="0.01">
+                    </div>
+                    <div class="input-group">
+                        <label>Customs Broker Fees (USD)</label>
+                        <input type="number" id="brokerFees" oninput="updateAllCalculations()" step="0.01">
+                    </div>
+                    <div class="input-group">
+                        <label>Documentation Fees (USD)</label>
+                        <input type="number" id="docFees" oninput="updateAllCalculations()" step="0.01">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Duties & Taxes Section -->
+    <div class="calculator-section">
+        <h2 class="section-title">Import Duties & Taxes</h2>
+        
+        <div class="main-content">
+            <div class="costs-grid">
+                <div>
+                    <div class="input-group">
+                        <label>Customs Duty Rates (USD)</label>
+                        <input type="number" id="customsDuty" oninput="updateAllCalculations()" step="0.01">
+                    </div>
+                </div>
+                <div>
+                    <div class="input-group">
+                        <label>Import VAT (USD)</label>
+                        <input type="number" id="importVAT" oninput="updateAllCalculations()" step="0.01">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="floating-summary">
+            <div class="summary-title">Total Import Costs</div>
+            <div class="calc-row">
+                <span>Freight:</span>
+                <span id="summary-freight">$0.00</span>
+            </div>
+            <div class="calc-row">
+                <span>Port Handling:</span>
+                <span id="summary-port">$0.00</span>
+            </div>
+            <div class="calc-row">
+                <span>Container Fees:</span>
+                <span id="summary-container">$0.00</span>
+            </div>
+            <div class="calc-row">
+                <span>Insurance:</span>
+                <span id="summary-insurance">$0.00</span>
+            </div>
+            <div class="calc-row">
+                <span>Broker Fees:</span>
+                <span
